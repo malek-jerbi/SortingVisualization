@@ -21,7 +21,7 @@ function App() {
       arr.push({ height: Math.ceil(Math.random() * 30), color: 'gray' })
     }
 
-    await sleep(3000)
+    await sleep(1000)
     setLinesArray(arr)
   }, [reset])
 
