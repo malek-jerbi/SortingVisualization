@@ -3,7 +3,7 @@ const Form = ({ handleSubmit, resetButton, speed, setSpeed }) => {
   const handleSpeed = (event) => {
     event.preventDefault()
 
-    setSpeed(event.target.value)
+    setSpeed(100 - event.target.value)
   }
   const [selected, setSelected] = useState(false)
   return (
@@ -43,12 +43,12 @@ const Form = ({ handleSubmit, resetButton, speed, setSpeed }) => {
           speed:
           <input
             type='range'
-            min='0'
-            max='100'
-            value={speed}
+            min={0}
+            max={100}
+            value={100 - speed}
             onChange={handleSpeed}
           />
-          {speed}
+          {100 - speed}
         </div>
         <div>
           <button disabled={!selected} type='submit'>
