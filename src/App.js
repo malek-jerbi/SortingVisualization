@@ -1,30 +1,32 @@
-import logo from './logo.svg'
 import './App.css'
 import { useEffect, useState, useRef } from 'react'
 import Bars from './Components/Bars'
 import Form from './Components/Form'
 
 function App() {
+  const n = 100 // array size
   const [linesArray, setLinesArray] = useState([])
-  const endOfArray = useRef(99)
+  const [speed, setSpeed] = useState(30)
+  const [secondUE, setSecondUE] = useState(false)
+  const endOfArray = useRef(n - 1)
   const linesIndex = useRef(1)
   const firstUpdate = useRef(true)
   const buttonPressed = useRef(false)
-  const reset = useRef(false)
-  useEffect(() => {
-    console.log('STARTT')
-    firstUpdate.current = true
-    buttonPressed.current = false
-    linesIndex.current = 1
-    endOfArray.current = 99
-    const arr = []
-    for (let i = 0; i < 100; i++) {
-      arr.push({ height: Math.ceil(Math.random() * 30), color: 'gray' })
-    }
-    setLinesArray(arr)
-  }, [reset.current])
+  const [reset, setReset] = useState(false)
+  const [wait, setWait] = useState(3)
 
   useEffect(async () => {
+    const arr = []
+    for (let i = 0; i < n; i++) {
+      arr.push({ height: Math.ceil(Math.random() * 30), color: 'gray' })
+    }
+
+    await sleep(3000)
+    setLinesArray(arr)
+  }, [reset])
+
+  useEffect(async () => {
+    if (!secondUE) return
     if (endOfArray.current === 0) return
     if (firstUpdate.current) {
       return
@@ -36,13 +38,14 @@ function App() {
       return
     }
 
-    await sleep(30)
+    await sleep(speed)
     if (
       linesArray[linesIndex.current].height >
       linesArray[linesIndex.current - 1].height
     ) {
       moveToNext()
     } else {
+      console.log(linesIndex.current)
       swap()
     }
   }, [linesArray])
@@ -51,9 +54,10 @@ function App() {
     event.preventDefault()
     if (!buttonPressed.current) {
       if (event.target.filter.value === 'bubble') {
+        setSecondUE(true)
         firstUpdate.current = false
-        fillLines()
         buttonPressed.current = true
+        fillLines()
       }
     }
     console.log('zzzzzz', event.target.filter.value)
@@ -101,17 +105,37 @@ function App() {
   }
 
   const resetButton = () => {
-    reset.current = !reset.current
+    returnTime()
+    console.log('STARTT')
+
+    setSecondUE(false)
+    firstUpdate.current = true
+    buttonPressed.current = false
+    linesIndex.current = 1
+    endOfArray.current = n - 1
+    setReset(!reset)
+
     console.log(reset.current)
   }
-
+  const returnTime = () => {
+    setInterval(() => {
+      console.log(wait)
+      setWait(2)
+    }, 1000)
+  }
   return (
     <div className='App'>
       <h1>Sorting Visualization</h1>
-      <Form handleSubmit={handleSubmit} resetButton={resetButton} />
+      <Form
+        handleSubmit={handleSubmit}
+        resetButton={resetButton}
+        speed={speed}
+        setSpeed={setSpeed}
+      />
       <Bars arr={linesArray} />
+      <div></div>
+      <div></div>
     </div>
   )
 }
-
 export default App
